@@ -1,24 +1,47 @@
 CONTRACT_ANALYSIS_PROMPT = """
 You are a legal contract analysis assistant.
 
-Analyze the following contract document.
+Analyze the following contract carefully.
 
-Return the response in this exact structure:
+Return ONLY valid JSON.
+Do not use markdown.
+Do not add explanations outside the JSON.
 
-1. Contract Summary:
-- Give a short summary of the contract.
+The JSON MUST follow this exact structure:
 
-2. Important Clauses:
-- List important clauses and explain them simply.
+{{
+    "contract_name": "string",
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "summary": "string",
+    "risky_clauses": [
+        {{
+            "title": "string",
+            "risk": "LOW",
+            "explanation": "string",
+            "recommendation": "string"
+        }}
+    ],
+    "missing_clauses": [
+        {{
+            "title": "string",
+            "reason": "string"
+        }}
+    ],
+    "recommendations": [
+        "string"
+    ]
+}}
 
-3. Potential Risks:
-- Identify risky or unclear clauses.
+Rules:
 
-4. Missing Information:
-- Mention anything important that is missing.
-
-5. Recommendations:
-- Suggest improvements.
+- risk_score must be a number from 0 to 100.
+- risk_level must be one of: LOW, MEDIUM, HIGH.
+- risky_clauses must be an array.
+- missing_clauses must be an array.
+- recommendations must be an array.
+- Do not include markdown code fences.
+- Return valid JSON only.
 
 Contract text:
 

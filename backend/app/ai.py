@@ -1,5 +1,6 @@
 from groq import Groq
 import os
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,4 +22,12 @@ def analyze_contract(prompt):
         ]
     )
 
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+
+    try:
+        return json.loads(content)
+
+    except json.JSONDecodeError:
+        raise ValueError(
+            "AI returned invalid JSON."
+        )
