@@ -58,6 +58,46 @@ function App() {
     }
   };
 
+  // Download the PDF report
+  const handleDownloadReport = async () => {
+    if (!analysisResults) return;
+
+    try {
+      const response = await fetch(
+        "http://10.20.52.228:8000/report",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            filename: selectedFile?.name || "contract.pdf",
+            analysis: analysisResults,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "LawLens_Report.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Report download failed:", error);
+      alert(
+        "Something went wrong while generating the report. Please check that the backend is running."
+      );
+    }
+  };
+
   // Start a new analysis
   const handleNewAnalysis = () => {
     setSelectedFile(null);
@@ -84,10 +124,6 @@ function App() {
 
   return (
     <>
-      {/* ==================================================
-          ANALYZING SCREEN
-      ================================================== */}
-
       {isAnalyzing ? (
         <div className="analyzing-screen">
           <div className="loading-icon">🔄</div>
@@ -106,13 +142,7 @@ function App() {
           </div>
         </div>
       ) : showResults && analysisResults ? (
-        /* ==================================================
-           RESULTS PAGE
-        ================================================== */
-
         <div className="results-page">
-          {/* Results Navbar */}
-
           <nav className="navbar">
             <div className="logo">⚖️ LawLens</div>
 
@@ -128,11 +158,7 @@ function App() {
             </div>
           </nav>
 
-          {/* Results Container */}
-
           <div className="results-container">
-            {/* Results Header */}
-
             <div className="results-header">
               <div>
                 <small>CONTRACT ANALYSIS</small>
@@ -154,13 +180,7 @@ function App() {
               </button>
             </div>
 
-            {/* ==================================================
-                RISK DASHBOARD
-            ================================================== */}
-
             <div className="risk-dashboard">
-              {/* Overall Score */}
-
               <div className="score-card">
                 <div className="score-heading">
                   Overall Risk Score
@@ -177,8 +197,6 @@ function App() {
 
                 <p>{analysisResults.summary}</p>
               </div>
-
-              {/* Risk Counts */}
 
               <div className="risk-counts">
                 <div className="count-card high-count">
@@ -197,10 +215,6 @@ function App() {
                 </div>
               </div>
             </div>
-
-            {/* ==================================================
-                RISKY CLAUSES
-            ================================================== */}
 
             <section className="results-section">
               <div className="section-title">
@@ -253,10 +267,6 @@ function App() {
               )}
             </section>
 
-            {/* ==================================================
-                MISSING CLAUSES
-            ================================================== */}
-
             <section className="results-section">
               <h2>❌ Missing Clauses</h2>
 
@@ -288,10 +298,6 @@ function App() {
               </div>
             </section>
 
-            {/* ==================================================
-                SIMPLE EXPLANATION
-            ================================================== */}
-
             <section className="simple-section">
               <div className="simple-icon">💡</div>
 
@@ -307,10 +313,6 @@ function App() {
                 </p>
               </div>
             </section>
-
-            {/* ==================================================
-                RECOMMENDATIONS
-            ================================================== */}
 
             <section className="results-section">
               <h2>💡 Recommendations</h2>
@@ -340,18 +342,10 @@ function App() {
               </div>
             </section>
 
-            {/* ==================================================
-                REPORT ACTIONS
-            ================================================== */}
-
             <div className="report-actions">
               <button
                 className="download-button"
-                onClick={() =>
-                  alert(
-                    "PDF report generation coming next!"
-                  )
-                }
+                onClick={handleDownloadReport}
               >
                 ↓ Download Full Report
               </button>
@@ -366,13 +360,7 @@ function App() {
           </div>
         </div>
       ) : (
-        /* ==================================================
-           LANDING PAGE
-        ================================================== */
-
         <>
-          {/* Navbar */}
-
           <nav className="navbar">
             <div className="logo">⚖️ LawLens</div>
 
@@ -386,10 +374,6 @@ function App() {
               <a href="#about">About</a>
             </div>
           </nav>
-
-          {/* ==================================================
-              HERO
-          ================================================== */}
 
           <main className="hero" id="home">
             <div className="hero-content">
@@ -409,8 +393,6 @@ function App() {
                 in simple language.
               </p>
 
-              {/* Upload */}
-
               <label className="upload-button">
                 📄 Upload Contract
 
@@ -422,15 +404,11 @@ function App() {
                 />
               </label>
 
-              {/* Selected File */}
-
               {selectedFile && (
                 <div className="selected-file">
                   📄 {selectedFile.name}
                 </div>
               )}
-
-              {/* Analyze */}
 
               {selectedFile && (
                 <button
@@ -445,10 +423,6 @@ function App() {
                 🔒 Your documents are secure and private
               </div>
             </div>
-
-            {/* ==================================================
-                PREVIEW CARD
-            ================================================== */}
 
             <div className="hero-card">
               <div className="card-header">
@@ -488,10 +462,6 @@ function App() {
               </div>
             </div>
           </main>
-
-          {/* ==================================================
-              FEATURES
-          ================================================== */}
 
           <section
             className="features"
